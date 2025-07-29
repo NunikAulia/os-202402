@@ -80,3 +80,9 @@ Semua kendala tersebut berhasil diatasi dengan debugging bertahap dan merujuk pa
 *Stack Overflow dan forum GitHub Issues untuk error terkait syscall dan pointer
 ---
 
+## 📝 Kesimpulan
+Dengan modul ini, sistem operasi xv6-public berhasil dimodifikasi untuk mendukung penjadwalan proses berbasis prioritas:
+* Proses dengan prioritas lebih tinggi dijalankan lebih dulu
+* Tidak ada preemption, sehingga satu proses akan berjalan hingga selesai
+* Scheduler menjadi deterministik dan dapat diatur secara eksplisit oleh user melalui syscall
+Modul ini memberikan pemahaman mendalam tentang bagaimana kernel memilih proses, bagaimana sistem call dibuat, dan bagaimana eksperimen dilakukan dalam OS kernel.
