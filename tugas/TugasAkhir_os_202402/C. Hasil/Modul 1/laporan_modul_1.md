@@ -5,15 +5,13 @@
 **Nama**: `<Nunik Aulia Primadani>`
 **NIM**: `<240202875>`
 **Modul yang Dikerjakan**:
-`(Contoh: Modul 1 – System Call dan Instrumentasi Kernel)`
+Modul 1-System Call dan Instrumentasi Kernel
 
 ---
 
 ## 📌 Deskripsi Singkat Tugas
 
-Tuliskan deskripsi singkat dari modul yang Anda kerjakan. Misalnya:
-
-* **Modul 1 – System Call dan Instrumentasi Kernel**:
+**Modul 1 – System Call dan Instrumentasi Kernel**:
   Modul ini berfokus pada penambahan dua system call baru ke sistem operasi xv6 (x86) dan melakukan instrumentasi kernel. System call yang diimplementasikan adalah getpinfo() untuk mendapatkan informasi proses aktif (PID, ukuran memori, dan nama proses) dan getReadCount() untuk mengembalikan total jumlah pemanggilan fungsi read() sejak sistem boot.
   
 ## 🛠️ Rincian Implementasi
@@ -64,21 +62,21 @@ Read Count Setelah: 5
 
 ## ⚠️ Kendala yang Dihadapi
 
-Tuliskan kendala (jika ada), misalnya:
-
-* Salah implementasi `page fault` menyebabkan panic
-* Salah memetakan alamat shared memory ke USERTOP
-* Proses biasa bisa akses audit log (belum ada validasi PID)
+Beberapa kendala yang sempat saya hadapi selama pengerjaan modul ini adalah:
+- Kesalahan awal dalam menggunakan ptable.proc pada perulangan proses aktif,   yang ternyata harus menggunakan array global proc[NPROC].
+- Kesalahan dalam pemrosesan pointer saat memanggil argptr() sehingga sempat   terjadi panic karena pointer tidak valid.
+- Ketidaksesuaian definisi struct pinfo antara kernel dan user space           menyebabkan error saat kompilasi.
+- Awalnya lupa mendaftarkan program uji ke dalam Makefile, sehingga binary     tidak muncul di shell xv6.
+Semua kendala tersebut berhasil diatasi dengan debugging bertahap dan merujuk pada dokumentasi xv6.
 
 ---
 
 ## 📚 Referensi
 
-Tuliskan sumber referensi yang Anda gunakan, misalnya:
-
 * Buku xv6 MIT: [https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf](https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf)
 * Repositori xv6-public: [https://github.com/mit-pdos/xv6-public](https://github.com/mit-pdos/xv6-public)
 * Stack Overflow, GitHub Issues, diskusi praktikum
-
+*Diskusi praktikum dan pembahasan asisten dosen
+*Stack Overflow dan forum GitHub Issues untuk error terkait syscall dan pointer
 ---
 
