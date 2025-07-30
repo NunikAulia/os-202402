@@ -51,8 +51,8 @@ Berikut adalah ringkasan modifikasi yang dilakukan pada kernel xv6:
 ## ✅ Uji Fungsionalitas
 
 Program uji berikut digunakan untuk memverifikasi fungsionalitas yang telah diimplementasikan:
-* cowtest: untuk menguji perilaku fork() dengan Copy-on-Write, memastikan bahwa penulisan pada proses anak tidak memengaruhi proses induk.
-* shmtest: untuk menguji fungsionalitas shmget() dan shmrelease(), memastikan bahwa proses induk dan anak dapat berbagi dan memodifikasi data pada halaman memori yang sama.
+* `cowtest`: untuk menguji perilaku `fork()` dengan Copy-on-Write, memastikan bahwa penulisan pada proses anak tidak memengaruhi proses induk.
+* `shmtest`: untuk menguji fungsionalitas `shmget()` dan `shmrelease()`, memastikan bahwa proses induk dan anak dapat berbagi dan memodifikasi data pada halaman memori yang sama.
 
 ---
 
@@ -87,10 +87,10 @@ Parent reads: B
 ## ⚠️ Kendala yang Dihadapi
 
 Selama proses implementasi, beberapa kendala yang mungkin dihadapi antara lain:
-* Pernah terjadi kernel panic karena tidak semua pemanggilan kalloc() atau kfree() dilindungi dengan incref/decref.
-* Salah akses ref_count (mengakses indeks negatif saat V2P(pa) di luar rentang) menyebabkan error.
-* Page fault handler awalnya tidak memperbarui flag PTE_COW, menyebabkan page fault berulang.
-* Pemetaan shared memory ke alamat USERTOP - (i+1)*PGSIZE perlu konsisten antara parent dan child.
+* Kesalahan Penanganan Page Fault: Implementasi handler `T_PGFLT` yang tidak tepat dapat menyebabkan kernel panic atau perilaku memori yang tidak terduga. Misalnya, lupa mengurangi reference count halaman lama atau salah mengatur flag PTE setelah penyalinan.
+* Manajemen Reference Count yang Tidak Konsisten: Kesalahan dalam memanggil `incref()` atau `decref()` (misalnya, lupa memanggil `incref()` setelah `kalloc()` atau `decref()` sebelum `kfree()`) dapat menyebabkan memory leak atau use-after-free.
+* Pemetaan Alamat Shared Memory: Menentukan alamat virtual yang konsisten dan tidak bentrok untuk shared memory (misalnya, menggunakan `USERTOP - (i+1)*PGSIZE`) memerlukan pemahaman yang baik tentang peta memori xv6.
+* Sinkronisasi (belum diimplementasikan): Meskipun tidak menjadi bagian dari tujuan utama modul ini, kendala potensial di masa depan adalah perlunya mekanisme sinkronisasi (misalnya, mutex atau semaphore) untuk mencegah race condition saat beberapa proses menulis ke shared memory secara bersamaan.
 
 ---
 
@@ -100,8 +100,14 @@ Tuliskan sumber referensi yang Anda gunakan, misalnya:
 
 * Buku xv6 MIT: [https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf](https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf)
 * Repositori xv6-public: [https://github.com/mit-pdos/xv6-public](https://github.com/mit-pdos/xv6-public)
-* Diskusi praktikum dan dokumentasi kode kernel vm.c, proc.c, trap.c, sysproc.c
-* Stack Overflow dan GitHub Issues terkait implementasi Copy-on-Write dan shared memory di xv6
+* Sumber daya daring lainnya seperti Stack Overflow, GitHub Issues, dan diskusi praktikum terkait xv6.
+---
+
+### 📝 Kesimpulan
+Dengan implementasi modul ini, Anda telah berhasil:
+* Mengimplementasikan Copy-on-Write Fork untuk efisiensi `fork()`.
+* Mengembangkan Shared Memory antar proses seperti `System V`.
+* Menguasai teknik page fault handling dan reference counting.
 
 ---
 
