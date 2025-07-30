@@ -5,7 +5,7 @@
 **Nama**: `<Nunik Aulia Primadani>`
 **NIM**: `<240202875>`
 **Modul yang Dikerjakan**:
-`Modul 3 – anajemen Memori Tingkat Lanjut (Copy-on-Write Fork dan Shared Memory)`
+`Modul 3 – Manajemen Memori Tingkat Lanjut (Copy-on-Write Fork dan Shared Memory)`
 
 ---
 
