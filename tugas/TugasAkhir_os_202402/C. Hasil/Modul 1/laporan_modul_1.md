@@ -14,6 +14,7 @@ Modul 1-System Call dan Instrumentasi Kernel
 **Modul 1 – System Call dan Instrumentasi Kernel**:
   Modul ini berfokus pada penambahan dua system call baru ke sistem operasi xv6 (x86) dan melakukan instrumentasi kernel. System call yang diimplementasikan adalah getpinfo() untuk mendapatkan informasi proses aktif (PID, ukuran memori, dan nama proses) dan getReadCount() untuk mengembalikan total jumlah pemanggilan fungsi read() sejak sistem boot.
   
+---
 ## 🛠️ Rincian Implementasi
 
 berikut adalah langkah-langkah implementasi yang dilakukan:
@@ -26,21 +27,13 @@ berikut adalah langkah-langkah implementasi yang dilakukan:
 - Memodifikasi fungsi sys_read() di sysfile.c untuk mengincrement readcount   setiap kali dipanggil.
 - Membuat dua program uji user-level: ptest.c untuk menguji getpinfo() dan    rtest.c untuk menguji getreadcount().
 - Mendaftarkan program uji _ptest dan _rtest ke dalam Makefile agar dapat     di-build dan dijalankan di xv6.
-  
-### Contoh untuk Modul 1:
-
-* Menambahkan dua system call baru di file `sysproc.c` dan `syscall.c`
-* Mengedit `user.h`, `usys.S`, dan `syscall.h` untuk mendaftarkan syscall
-* Menambahkan struktur `struct pinfo` di `proc.h`
-* Menambahkan counter `readcount` di kernel
-* Membuat dua program uji: `ptest.c` dan `rtest.c`
 ---
 
 ## ✅ Uji Fungsionalitas
 Program uji yang digunakan untuk memverifikasi fungsionalitas system call    baru adalah:
 - ptest: Digunakan untuk menguji system call getpinfo() dan menampilkan        daftar proses aktif beserta PID, ukuran memori, dan namanya.
 - rtest: Digunakan untuk menguji system call getreadcount() dan                memverifikasi bahwa counter read() bertambah setelah operasi baca            dilakukan.
-
+---
 ## 📷 Hasil Uji
 Berikut adalah contoh output terminal dari program uji yang dijalankan di shell xv6:
 
@@ -60,6 +53,7 @@ Read Count Setelah: 5
 ## 📷 Screenshot :
 <img width="961" height="524" alt="Screenshot 2025-07-29 115401" src="https://github.com/user-attachments/assets/ac65bb5c-2f45-4243-8685-c87d6796be0f" />
 
+---
 ## ⚠️ Kendala yang Dihadapi
 
 Beberapa kendala yang sempat saya hadapi selama pengerjaan modul ini adalah:
