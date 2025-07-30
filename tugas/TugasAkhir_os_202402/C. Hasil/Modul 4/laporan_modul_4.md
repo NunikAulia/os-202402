@@ -2,86 +2,70 @@
 
 **Mata Kuliah**: Sistem Operasi
 **Semester**: Genap / Tahun Ajaran 2024–2025
-**Nama**: `<Nama Lengkap>`
-**NIM**: `<Nomor Induk Mahasiswa>`
+**Nama**: `<Nunik Aulia Primadani>`
+**NIM**: `<240202875>`
 **Modul yang Dikerjakan**:
-`(Contoh: Modul 1 – System Call dan Instrumentasi Kernel)`
+`Modul 4 – Subsistem Kernel Alternatif (System Call chmod dan Device /dev/random)`
 
 ---
 
 ## 📌 Deskripsi Singkat Tugas
 
-Tuliskan deskripsi singkat dari modul yang Anda kerjakan. Misalnya:
+* Modul 4 – Subsistem Kernel Alternatif:
+Modul ini menambahkan dua fitur penting ke kernel xv6:
+  * System Call chmod() untuk mengatur mode file (read-only atau read-write). Jika file disetel sebagai read-only, proses tidak dapat menulis ke file tersebut.
+  * Pseudo-device /dev/random, yaitu sebuah driver perangkat karakter yang menghasilkan byte acak saat dibaca oleh program u
 
-* **Modul 1 – System Call dan Instrumentasi Kernel**:
-  Menambahkan dua system call baru, yaitu `getpinfo()` untuk melihat proses yang aktif dan `getReadCount()` untuk menghitung jumlah pemanggilan `read()` sejak boot.
 ---
 
 ## 🛠️ Rincian Implementasi
 
-Tuliskan secara ringkas namun jelas apa yang Anda lakukan:
-
-### Contoh untuk Modul 1:
-
-* Menambahkan dua system call baru di file `sysproc.c` dan `syscall.c`
-* Mengedit `user.h`, `usys.S`, dan `syscall.h` untuk mendaftarkan syscall
-* Menambahkan struktur `struct pinfo` di `proc.h`
-* Menambahkan counter `readcount` di kernel
-* Membuat dua program uji: `ptest.c` dan `rtest.c`
+* Menambahkan field short mode pada struktur inode di fs.h (hanya di memori, tidak ke disk layout).
+* Membuat syscall baru chmod(path, mode) di sysfile.c yang mengatur ip->mode.
+* Registrasi syscall dilakukan di:
+    * syscall.h (#define SYS_chmod 27)
+    * syscall.c ([SYS_chmod] = sys_chmod)
+    * user.h (int chmod(char*, int);)
+    * usys.S (SYSCALL(chmod))
+* Memodifikasi filewrite() di file.c untuk mengecek f->ip->mode. Jika mode == 1, penulisan ditolak.
+* Menambahkan file random.c yang berisi fungsi randomread() untuk menghasilkan byte acak menggunakan LCG (linear congruential generator).
+* Registrasi handler random device di devsw[3] pada file.c.
+* Menambahkan pemanggilan mknod("/dev/random", 1, 3); di init.c untuk membuat device node /dev/random.
+* Menambahkan dua program uji:
+    * chmodtest.c: menguji pembatasan akses tulis pada file read-only.
+    * randomtest.c: menguji pembacaan 8 byte acak dari /dev/random.
 ---
 
 ## ✅ Uji Fungsionalitas
 
-Tuliskan program uji apa saja yang Anda gunakan, misalnya:
-
-* `ptest`: untuk menguji `getpinfo()`
-* `rtest`: untuk menguji `getReadCount()`
-* `cowtest`: untuk menguji fork dengan Copy-on-Write
-* `shmtest`: untuk menguji `shmget()` dan `shmrelease()`
-* `chmodtest`: untuk memastikan file `read-only` tidak bisa ditulis
-* `audit`: untuk melihat isi log system call (jika dijalankan oleh PID 1)
+* chmodtest: menguji syscall chmod() untuk mengatur file menjadi read-only, lalu mencoba menulis ke file tersebut.
+* randomtest: membuka /dev/random dan membaca 8 byte acak untuk memastikan driver berjalan.
 
 ---
 
 ## 📷 Hasil Uji
 
-Lampirkan hasil uji berupa screenshot atau output terminal. Contoh:
-
-### 📍 Contoh Output `cowtest`:
-
-```
-Child sees: Y
-Parent sees: X
-```
-
-### 📍 Contoh Output `shmtest`:
-
-```
-Child reads: A
-Parent reads: B
-```
-
-### 📍 Contoh Output `chmodtest`:
-
+### 📍 Output chmodtest:
 ```
 Write blocked as expected
 ```
-
-Jika ada screenshot:
-
+### 📍 Output randomtest (acak tiap run):
 ```
-![hasil cowtest](./screenshots/cowtest_output.png)
+241 6 82 99 12 201 44 73
 ```
+### 📷 Screenshot
+<img width="1087" height="408" alt="Screenshot 2025-07-28 163241" src="https://github.com/user-attachments/assets/0e5f6a75-17bd-4b05-b09b-478702d9ad78" />
+
+<img width="1044" height="418" alt="Screenshot 2025-07-27 091905" src="https://github.com/user-attachments/assets/96e22a04-0c7a-4c59-b61c-9ce75647d2d4" />
 
 ---
 
 ## ⚠️ Kendala yang Dihadapi
 
-Tuliskan kendala (jika ada), misalnya:
-
-* Salah implementasi `page fault` menyebabkan panic
-* Salah memetakan alamat shared memory ke USERTOP
-* Proses biasa bisa akses audit log (belum ada validasi PID)
+* Kompilasi awal gagal karena mencoba menambahkan mode ke struktur inode disk tanpa memodifikasi layout disk (yang bisa menyebabkan panic).
+* Terjadi panic ketika randomread() belum diregister di devsw[].
+* Lupa membuat node /dev/random menggunakan mknod() di init.c, sehingga open() gagal di randomtest.c.
+* Beberapa kali lupa menambahkan program uji di UPROGS pada Makefile, menyebabkan binary tidak muncul.
 
 ---
 
@@ -91,7 +75,8 @@ Tuliskan sumber referensi yang Anda gunakan, misalnya:
 
 * Buku xv6 MIT: [https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf](https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf)
 * Repositori xv6-public: [https://github.com/mit-pdos/xv6-public](https://github.com/mit-pdos/xv6-public)
-* Stack Overflow, GitHub Issues, diskusi praktikum
+* Diskusi praktikum dan dokumentasi kernel
+* Stack Overflow dan GitHub Issues seputar mknod, inode, dan device driver xv6
 
 ---
 
