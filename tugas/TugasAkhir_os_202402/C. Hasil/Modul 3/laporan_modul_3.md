@@ -36,7 +36,7 @@ Berikut adalah ringkasan modifikasi yang dilakukan pada kernel xv6:
 * mmu.h:
     * Menambahkan custom flag PTE_COW (nilai 0x200) untuk menandai halaman yang berada dalam mode Copy-on-Write.
 
-*sysproc.c:
+* sysproc.c:
     * Mengimplementasikan system call sys_shmget() untuk mengalokasikan atau mendapatkan segmen shared memory berdasarkan kunci (key), serta memetakan halaman tersebut ke ruang alamat proses.
     * Mengimplementasikan system call sys_shmrelease() untuk mengurangi reference count segmen shared memory dan membebaskan halaman fisik jika reference count mencapai nol.
 
