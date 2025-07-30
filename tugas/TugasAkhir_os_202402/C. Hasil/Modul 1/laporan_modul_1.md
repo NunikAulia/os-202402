@@ -12,7 +12,7 @@
 ## 📌 Deskripsi Singkat Tugas
 
 **Modul 1 – System Call dan Instrumentasi Kernel**:
-  Modul ini berfokus pada penambahan dua system call baru ke sistem operasi xv6 (x86) dan melakukan instrumentasi kernel. System call yang diimplementasikan adalah `getpinfo()` untuk mendapatkan informasi proses aktif (PID, ukuran memori, dan nama proses) dan `getReadCount()` untuk mengembalikan total jumlah pemanggilan fungsi read() sejak sistem boot.
+  Modul ini berfokus pada penambahan dua system call baru ke sistem operasi xv6 (x86) dan melakukan instrumentasi kernel. System call yang diimplementasikan adalah `getpinfo()` untuk mendapatkan informasi proses aktif (PID, ukuran memori, dan nama proses) dan `getReadCount()` untuk mengembalikan total jumlah pemanggilan fungsi `read()` sejak sistem boot.
   
 ---
 ## 🛠️ Rincian Implementasi
