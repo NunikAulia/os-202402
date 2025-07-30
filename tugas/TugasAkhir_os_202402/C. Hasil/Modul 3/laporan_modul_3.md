@@ -73,7 +73,9 @@ Parent reads: B
 
 ### 📷 Screenshot
 ```
+
 <img width="973" height="454" alt="Screenshot 2025-07-28 162834" src="https://github.com/user-attachments/assets/21e4a306-3278-4390-97d6-4af86e33d2e7" />
+
 
 <img width="1003" height="441" alt="Screenshot 2025-07-28 162757" src="https://github.com/user-attachments/assets/335a85a7-8ae9-4d28-ac95-5dd51ef812a6" />
 
