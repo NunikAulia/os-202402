@@ -12,8 +12,8 @@
 ## 📌 Deskripsi Singkat Tugas
 
 Modul ini berfokus pada implementasi dua teknik manajemen memori tingkat lanjut dalam sistem operasi xv6:
-* Copy-on-Write (CoW) Fork: Mengubah perilaku fork() agar tidak lagi menyalin seluruh memori proses secara langsung. Sebaliknya, halaman-halaman memori dibagikan sebagai read-only antara proses induk dan anak. Penyalinan halaman hanya dilakukan saat terjadi percobaan penulisan (melalui page fault). Implementasi ini memanfaatkan reference count untuk manajemen memori fisik yang efisien.
-* Shared Memory ala System V: Menambahkan dua system call baru, yaitu shmget(int key) dan shmrelease(int key), yang memungkinkan antar-proses untuk berbagi satu halaman memori fisik. Mekanisme reference count juga digunakan untuk mengelola halaman shared memory.
+* Copy-on-Write (CoW) Fork: Mengubah perilaku `fork()` agar tidak lagi menyalin seluruh memori proses secara langsung. Sebaliknya, halaman-halaman memori dibagikan sebagai read-only antara proses induk dan anak. Penyalinan halaman hanya dilakukan saat terjadi percobaan penulisan (melalui page fault). Implementasi ini memanfaatkan reference count untuk manajemen memori fisik yang efisien.
+* Shared Memory ala System V: Menambahkan dua system call baru, yaitu `shmget(int key)` dan `shmrelease(int key)`, yang memungkinkan antar-proses untuk berbagi satu halaman memori fisik. Mekanisme reference count juga digunakan untuk mengelola halaman shared memory.
 
 ---
 
@@ -21,27 +21,30 @@ Modul ini berfokus pada implementasi dua teknik manajemen memori tingkat lanjut 
 
 Berikut adalah ringkasan modifikasi yang dilakukan pada kernel xv6:
 
-* vm.c:
-    *Menambahkan array global ref_count[] untuk melacak jumlah referensi ke setiap halaman fisik.
-    * Mengimplementasikan fungsi incref(char *pa) dan decref(char *pa) untuk memanipulasi reference count halaman fisik.
-    * Memodifikasi fungsi copyuvm() menjadi cowuvm() untuk mengimplementasikan logika CoW, yaitu menghapus flag PTE_W dan menambahkan flag PTE_COW pada page table entry (PTE) serta memanggil incref().
-    * Menambahkan struktur shmtab[] untuk mengelola segmen shared memory.
+* `vm.c`:
+    *Menambahkan array global `ref_count[]` untuk melacak jumlah referensi ke setiap halaman fisik.
+    * Mengimplementasikan fungsi `incref(char *pa)` dan `decref(char *pa)` untuk memanipulasi reference count halaman fisik.
+    * Memodifikasi fungsi `copyuvm()` menjadi `cowuvm()` untuk mengimplementasikan logika CoW, yaitu menghapus flag `PTE_W` dan menambahkan flag `PTE_COW` pada page table entry (PTE) serta memanggil `incref()`.
+    * Menambahkan struktur `shmtab[]` untuk mengelola segmen shared memory.
 
-* trap.c:
-    * Menambahkan handler untuk page fault (T_PGFLT). Handler ini bertanggung jawab untuk mendeteksi page fault pada halaman yang ditandai PTE_COW, mengalokasikan halaman fisik baru, menyalin data dari halaman lama ke halaman baru, mengurangi reference count halaman lama, dan memperbarui PTE dengan flag PTE_W (menghapus PTE_COW).
+* `trap.c`:
+    * Menambahkan handler untuk page fault (`T_PGFLT`). Handler ini bertanggung jawab untuk mendeteksi page fault pada halaman yang ditandai `PTE_COW`, mengalokasikan halaman fisik baru, menyalin data dari halaman lama ke halaman baru, mengurangi reference count halaman lama, dan memperbarui PTE dengan flag `PTE_W` (menghapus `PTE_COW`).
 
-* proc.c:
-    * Mengubah implementasi fork() agar memanggil cowuvm() alih-alih copyuvm() untuk mengelola memori proses anak.
+* `proc.c`:
+    * Mengubah implementasi `fork()` agar memanggil `cowuvm()` alih-alih `copyuvm()` untuk mengelola memori proses anak.
 
-* mmu.h:
-    * Menambahkan custom flag PTE_COW (nilai 0x200) untuk menandai halaman yang berada dalam mode Copy-on-Write.
+* `defs.h`:
+      * Menambahkan deklarasi fungsi `incref` dan `decref`.
 
-* sysproc.c:
-    * Mengimplementasikan system call sys_shmget() untuk mengalokasikan atau mendapatkan segmen shared memory berdasarkan kunci (key), serta memetakan halaman tersebut ke ruang alamat proses.
-    * Mengimplementasikan system call sys_shmrelease() untuk mengurangi reference count segmen shared memory dan membebaskan halaman fisik jika reference count mencapai nol.
+* `mmu.h`:
+    * Menambahkan custom flag `PTE_COW` (nilai `0x200`) untuk menandai halaman yang berada dalam mode Copy-on-Write.
 
-* user.h, usys.S, syscall.c, syscall.h:
-    * Mendaftarkan system call shmget dan shmrelease ke dalam tabel system call xv6 agar dapat dipanggil dari aplikasi pengguna.
+* `sysproc.c`:
+    * Mengimplementasikan system call `sys_shmget()` untuk mengalokasikan atau mendapatkan segmen shared memory berdasarkan kunci (`key`), serta memetakan halaman tersebut ke ruang alamat proses.
+    * Mengimplementasikan system call `sys_shmrelease()` untuk mengurangi reference count segmen shared memory dan membebaskan halaman fisik jika reference count mencapai nol.
+
+* `user.h`, `usys.S`, `syscall.c`, `syscall.h`:
+    * Mendaftarkan system call `shmget` dan `shmrelease` ke dalam tabel system call xv6 agar dapat dipanggil dari aplikasi pengguna.
 
 ---
 
